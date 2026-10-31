@@ -26,3 +26,12 @@ export class NotImplementedError extends Error {
     this.code = 'NOT_IMPLEMENTED';
   }
 }
+
+// Thrown when a provider is configured but cannot produce an explanation
+export class ProviderError extends Error {
+  constructor(message, { status = 502, code = 'PROVIDER_ERROR', cause } = {}) {
+    super(message, { cause });
+    this.status = status;
+    this.code = code;
+  }
+}

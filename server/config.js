@@ -12,7 +12,9 @@ export const config = {
   aiProvider: (process.env.AI_PROVIDER || 'mock').toLowerCase(),
   geminiApiKey: process.env.GEMINI_API_KEY || '',
   groqApiKey: process.env.GROQ_API_KEY || '',
-  ollamaUrl: process.env.OLLAMA_URL || 'http://localhost:11434',
+  ollamaUrl: (process.env.OLLAMA_URL || 'http://localhost:11434').replace(/\/+$/, ''),
+  ollamaModel: process.env.OLLAMA_MODEL || 'llama3.2',
+  ollamaTimeoutMs: Number(process.env.OLLAMA_TIMEOUT_MS) || 120000,
   perPage: 6,
   dataDir: path.join(__dirname, 'data'),
 };
