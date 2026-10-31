@@ -38,7 +38,7 @@ export class MockGitHubProvider extends GitHubProvider {
   async getRepoFile(owner, name, filePath) {
     const repo = repos[`${owner}/${name}`];
     if (!repo) return null;
-    const key = filePath.toLowerCase().startsWith('contributing') ? 'contributing' : 'readme';
+    const key = filePath.toLowerCase().includes('contributing') ? 'contributing' : 'readme';
     return repo[key] ?? null;
   }
 }

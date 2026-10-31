@@ -1,4 +1,4 @@
-import { AIProvider, NotImplementedError } from './provider.js';
+import { AIProvider, NotImplementedError, ProviderError } from './provider.js';
 import { config } from '../config.js';
 
 const MAX_BODY_CHARS = 6000;

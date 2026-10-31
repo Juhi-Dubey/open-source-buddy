@@ -1,4 +1,4 @@
-import { AIProvider, NotImplementedError } from './provider.js';
+import { AIProvider, NotImplementedError, ProviderError } from './provider.js';
 import { config } from '../config.js';
 
 const API_URL = 'https://api.groq.com/openai/v1/chat/completions';

@@ -16,19 +16,36 @@ function guessFiles(issue) {
   return ['src/', 'README.md'];
 }
 
+function extractRepoSetup(context) {
+  if (!context || typeof context !== 'string') return null;
+  // Match commands like: Run `npm install` then `npm start`
+  const runMatch = context.match(/(?:Run|Install with|Execute|Setup:?)\s+(`[^`]+`(?:\s+then\s+`[^`]+`)?|`[^`]+`)/i);
+  if (runMatch) return runMatch[0].trim();
+
+  // Match standalone code blocks or backticked package/tool commands
+  const toolMatch = context.match(/`((?:npm|pnpm|yarn|cargo|pip|python|flask|go|mvn|gradle|make)\s+[^`]+)`/i);
+  if (toolMatch) return `Run ${toolMatch[0]}`;
+
+  return null;
+}
+
 // Template-based explanation. No network, no keys.
 export class MockAIProvider extends AIProvider {
   get name() {
     return 'mock';
   }
 
-  async explain(issue) {
+  async explain(issue, { context } = {}) {
     const labels = issue.labels || [];
     const files = guessFiles(issue);
     const friendly = labels.some((l) => l.toLowerCase().includes('good first'));
+    const setup = extractRepoSetup(context);
+
     const plan = [
       `Fork **${issue.repo}** and clone your fork.`,
-      'Read CONTRIBUTING.md and run the project locally.',
+      setup
+        ? `Set up the repository: ${setup}.`
+        : 'Read CONTRIBUTING.md and run the project locally.',
       `Open ${files.map((f) => `\`${f}\``).join(', ')} and find the code the issue talks about.`,
       'Reproduce the problem (or read the current text) before changing anything.',
       'Make the smallest change that solves it, on a new branch.',
@@ -41,6 +58,7 @@ export class MockAIProvider extends AIProvider {
       '## In plain English',
       firstSentences(issue.body),
       '',
+      ...(setup ? [`Repository setup: ${setup}.`, ''] : []),
       `Labels: ${labels.length ? labels.join(', ') : 'none'}. ${
         friendly ? 'This one is marked beginner friendly.' : 'Read the discussion first to judge the effort.'
       }`,
