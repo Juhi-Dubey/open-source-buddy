@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node --watch index.js",
     "start": "node index.js",
-    "test": "node -e \"console.log('No tests yet')\""
+    "test": "node --test lib/healthScore.test.js ai/groq.test.js ai/ollama.test.js"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
