@@ -4,7 +4,7 @@ import ExplainPanel from './ExplainPanel.jsx';
 import TrackButton from './TrackButton.jsx';
 
 export default function IssueDetail({ issue, issues, index, onClose }) {
-  const { result, loading, error, explain, reset } = useExplain();
+  const { result, loading, error, streaming, streamedMarkdown, explain, cancel, reset } = useExplain();
 
   useEffect(() => {
     reset();
@@ -26,12 +26,18 @@ export default function IssueDetail({ issue, issues, index, onClose }) {
       </p>
       <p className="body">{issue.body}</p>
       <div className="detail-actions">
-        <button className="btn primary" onClick={() => explain(issues[index] ?? issue)} disabled={loading}>
-          {loading ? 'Thinking…' : 'Explain this issue'}
-        </button>
+        {streaming ? (
+          <button className="btn cancel" onClick={cancel}>
+            ⏹ Cancel
+          </button>
+        ) : (
+          <button className="btn primary" onClick={() => explain(issues[index] ?? issue)} disabled={loading}>
+            {loading && !streaming ? 'Thinking…' : 'Explain this issue'}
+          </button>
+        )}
         <TrackButton issue={issue} />
       </div>
-      <ExplainPanel result={result} error={error} />
+      <ExplainPanel result={result} error={error} streaming={streaming} streamedMarkdown={streamedMarkdown} />
     </aside>
   );
 }

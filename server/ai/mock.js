@@ -54,4 +54,15 @@ export class MockAIProvider extends AIProvider {
 
     return { issueTitle: issue.title, markdown, plan };
   }
+
+  // Stream the mock explanation in small chunks so the UI can show progressive
+  // rendering even without a real AI backend.
+  async *explainStream(issue, opts) {
+    const { markdown } = await this.explain(issue, opts);
+    // Split by line, yielding each line (with its newline) as a chunk.
+    const lines = markdown.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      yield lines[i] + (i < lines.length - 1 ? '\n' : '');
+    }
+  }
 }
