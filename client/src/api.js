@@ -1,14 +1,24 @@
+async function parseError(res) {
+  let message = `Request failed (${res.status})`;
+  const retryAfter = res.headers?.get('Retry-After');
+  if (res.status === 429) {
+    message = retryAfter
+      ? `Rate limit reached. Please wait ${retryAfter}s before trying again.`
+      : 'Too many requests. Please wait a moment and try again.';
+  }
+  try {
+    const body = await res.json();
+    if (body.error) message = body.error;
+  } catch {
+    // response had no JSON body
+  }
+  return message;
+}
+
 async function request(path, options = {}) {
   const res = await fetch(path, { headers: { 'Content-Type': 'application/json' }, ...options });
   if (!res.ok) {
-    let message = `Request failed (${res.status})`;
-    try {
-      const body = await res.json();
-      if (body.error) message = body.error;
-    } catch {
-      // response had no JSON body
-    }
-    throw new Error(message);
+    throw new Error(await parseError(res));
   }
   return res.json();
 }
@@ -51,12 +61,7 @@ export async function explainIssueStream(issue, { signal, onChunk }) {
   });
 
   if (!res.ok) {
-    let message = `Request failed (${res.status})`;
-    try {
-      const body = await res.json();
-      if (body.error) message = body.error;
-    } catch { /* no JSON body */ }
-    throw new Error(message);
+    throw new Error(await parseError(res));
   }
 
   const reader = res.body.getReader();

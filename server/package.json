@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node --watch index.js",
     "start": "node index.js",
-    "test": "node --test lib/healthScore.test.js ai/stream.test.js ai/rag.test.js ai/groq.test.js ai/ollama.test.js"
+    "test": "node --test lib/healthScore.test.js middleware/rateLimit.test.js ai/stream.test.js ai/rag.test.js ai/groq.test.js ai/ollama.test.js"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
